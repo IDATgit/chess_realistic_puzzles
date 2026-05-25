@@ -11,3 +11,4 @@ A chronological log of completed work. When items in `project_future_plan.md` ar
 - **2026-05-25** — Documented Lichess access model, size (~2.46 TB compressed / ~7.77B games), and bulk-vs-API distinction in `research/lichess database access.md`.
 - **2026-05-25** — **Decision:** MVP ingest uses **one recent month** of Lichess standard games only (~30 GB compressed); no full archive download.
 - **2026-05-25** — Started download of `lichess_db_standard_rated_2026-04.pgn.zst` into `data/` (latest month on database.lichess.org).
+- **2026-05-25** — Initialized git repo; pushed planning docs to https://github.com/IDATgit/chess_realistic_puzzles (raw `.pgn.zst` gitignored).
