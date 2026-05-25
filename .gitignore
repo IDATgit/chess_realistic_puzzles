@@ -1,2 +1,11 @@
 # Lichess raw dumps (~30 GB per month)
 data/*.pgn.zst
+
+# Processed databases (large; build locally)
+data/processed/
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/

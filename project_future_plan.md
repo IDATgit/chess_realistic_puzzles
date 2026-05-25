@@ -35,13 +35,27 @@ Next steps and action items. When an item is completed, move it to `project_hist
 
 ### Processed position database (first build stage — current focus)
 
-Raw Lichess PGN is games-centric. We need a **processed, position-centric** store: each entry is a **position** (FEN or equivalent key), with a **list of game occurrences** at that position (game id, player Elos, side to move, ply, result, etc.). This enables searching for the same position across e.g. ~1000-rated and ~1300-rated games.
+Raw Lichess PGN is games-centric. We build a **processed, position-centric** SQLite database under `data/processed/`.
 
-- [ ] **Design the processed database format** — schema, on-disk format, and indexing strategy optimized for “lookup by position → list of games,” not for storing raw PGN long-term.
-- [ ] Compare candidate formats (e.g. SQLite/Parquet/DuckDB, custom binary index, embedded KV) for **one month (~85–100M games)** ingest and query by FEN + Elo band.
-- [ ] Define the **position key** (normalized FEN? hash of board + side to move + castling + en passant?) and what metadata each **game occurrence** must carry.
-- [ ] Design the **batch pipeline**: stream-parse `.pgn.zst` → emit every position (or filtered plies) → aggregate into position index → write processed DB under `data/` (separate from raw dump).
-- [ ] Estimate **processed DB size** vs raw (~27 GB) and expected build time for one month.
+#### Methodology (decided 2026-05-25)
+
+| Topic | Rule |
+|-------|------|
+| **Position identity** | Normalized FEN = fields 1–4 only (pieces, side to move, castling, en passant). Halfmove/fullmove counters omitted so **transpositions share one key**. |
+| **Whose Elo** | Rating of the **player to move** at that position (`WhiteElo` or `BlackElo` from PGN). |
+| **Elo binning** | **100-point bins** by floor: 0–99→bin `0`, 100–199→bin `100`, …, 1523→bin `1500`. |
+| **Outcome stats** | Per bin: **games**, **wins**, **losses**, **draws** from the **player-to-move** perspective (game `Result` tag). |
+| **Move stats** | For each legal **next move actually played**, count games per **UCI** move (e.g. `e2e4`) in that bin. |
+| **Dedup within game** | Each game counts **at most once per position** (first time that position is reached). Matches standard opening-database practice; “games” = distinct games reaching the position. |
+| **Skip** | Games missing either player rating; unknown/unplayed results (`*`). |
+| **Storage** | SQLite: `positions`, `bin_stats`, `move_stats` — see `pipeline/schema.sql`. |
+| **Build** | Stream `.pgn.zst` → batch aggregate → flush every 5k games. Script: `pipeline/build_position_db.py`. |
+
+- [x] **Design the processed database format** — SQLite schema in `pipeline/schema.sql`.
+- [x] Define the **position key** — normalized FEN (4 fields).
+- [x] Design the **batch pipeline** — `pipeline/build_position_db.py`.
+- [ ] **Run full build** on `data/lichess_db_standard_rated_2026-04.pgn.zst` → `data/processed/position_stats.db`.
+- [ ] Estimate **processed DB size** and wall-clock time after first full run (or large sample).
 
 ### Later pipeline stages
 
