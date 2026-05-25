@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Position Explorer — Win Rate by Elo</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="site-nav">
+      <a href="/puzzle">Puzzles</a>
+      <a href="/" class="nav-active">Position Explorer</a>
+    </nav>
+    <h1>Position Explorer</h1>
+    <p class="subtitle">Win / draw / loss rates by 100-point Elo bin (player to move)</p>
+    <div id="build-status" class="build-status">Loading database status…</div>
+  </header>
+
+  <main class="layout">
+    <section class="board-panel">
+      <div id="board"></div>
+      <div class="board-actions">
+        <button id="reset-btn" type="button">Reset board</button>
+        <button id="flip-btn" type="button">Flip board</button>
+      </div>
+      <div class="fen-block">
+        <label for="fen-display">FEN</label>
+        <input id="fen-display" type="text" readonly />
+      </div>
+      <p id="position-summary" class="position-summary"></p>
+    </section>
+
+    <section class="stats-panel">
+      <h2>Win rate by Elo</h2>
+      <p class="hint">Stats update when you make a legal move. Empty bins are hidden.</p>
+      <div id="stats-empty" class="stats-empty hidden">No games in the database for this position yet.</div>
+      <div class="table-wrap">
+        <table id="stats-table">
+          <thead>
+            <tr>
+              <th>Elo bin</th>
+              <th>Games</th>
+              <th>Win %</th>
+              <th>Draw %</th>
+              <th>Loss %</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h2>Popular moves</h2>
+      <div class="table-wrap">
+        <table id="moves-table">
+          <thead>
+            <tr>
+              <th>Move (UCI)</th>
+              <th>Games</th>
+              <th>Share</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
