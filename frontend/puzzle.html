@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Realistic Puzzles</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="site-nav">
+      <a href="/puzzle" class="nav-active">Puzzles</a>
+      <a href="/">Position Explorer</a>
+    </nav>
+    <h1>Realistic Puzzles</h1>
+    <p class="subtitle">Positions where stronger players avoid losses more often</p>
+    <div id="build-status" class="build-status">Loading database status…</div>
+  </header>
+
+  <main>
+    <section id="start-screen" class="start-screen">
+      <div class="start-card">
+        <h2>Your rating</h2>
+        <p class="hint">Sample positions from Lichess and compare your Elo band to a higher band.</p>
+        <label for="elo-input">Elo</label>
+        <input id="elo-input" type="number" min="400" max="3500" step="1" value="1500" />
+
+        <details class="puzzle-settings" open>
+          <summary>Search settings</summary>
+          <div class="settings-grid">
+            <label for="elo-diff-input">Elo difference</label>
+            <input id="elo-diff-input" type="number" min="50" max="800" step="50" value="300" />
+
+            <label for="improvement-input">Min improvement (%)</label>
+            <input id="improvement-input" type="number" min="1" max="50" step="1" value="10" />
+
+            <label for="min-games-input">Min games per band</label>
+            <input id="min-games-input" type="number" min="5" max="1000" step="1" value="25" />
+
+            <label for="max-attempts-input">Max positions to check</label>
+            <input id="max-attempts-input" type="number" min="100" max="50000" step="100" value="5000" />
+          </div>
+        </details>
+
+        <button id="start-btn" type="button">Find puzzle</button>
+        <p id="start-error" class="error-msg hidden"></p>
+      </div>
+    </section>
+
+    <section id="puzzle-screen" class="puzzle-layout hidden">
+      <div class="board-panel">
+        <div id="board"></div>
+        <p id="turn-label" class="turn-label"></p>
+        <div class="board-actions">
+          <button id="next-btn" type="button">Next puzzle</button>
+          <button id="flip-btn" type="button">Flip board</button>
+        </div>
+        <p id="feedback" class="feedback"></p>
+      </div>
+
+      <div class="puzzle-info">
+        <h2>Puzzle stats</h2>
+        <p id="search-summary" class="search-summary"></p>
+        <div class="comparison-grid">
+          <article class="stat-card">
+            <h3 id="low-bin-title">Your band</h3>
+            <p id="low-bin-stats" class="stat-numbers"></p>
+            <p id="low-bin-rate" class="stat-rate"></p>
+          </article>
+          <article class="stat-card highlight">
+            <h3 id="high-bin-title">+300 band</h3>
+            <p id="high-bin-stats" class="stat-numbers"></p>
+            <p id="high-bin-rate" class="stat-rate"></p>
+          </article>
+        </div>
+        <p id="improvement-line" class="improvement-line"></p>
+        <p class="hint puzzle-hint">Find the move stronger players play most often from this position.</p>
+
+        <div id="move-stats-section" class="move-stats-section hidden">
+          <h2>Move popularity</h2>
+          <div class="comparison-grid move-stats-grid">
+            <div>
+              <h3 id="low-moves-title">Your band</h3>
+              <div class="table-wrap">
+                <table class="move-stats-table">
+                  <thead>
+                    <tr>
+                      <th>Move</th>
+                      <th>Games</th>
+                      <th>Share</th>
+                    </tr>
+                  </thead>
+                  <tbody id="low-moves-body"></tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <h3 id="high-moves-title">+300 band</h3>
+              <div class="table-wrap">
+                <table class="move-stats-table">
+                  <thead>
+                    <tr>
+                      <th>Move</th>
+                      <th>Games</th>
+                      <th>Share</th>
+                    </tr>
+                  </thead>
+                  <tbody id="high-moves-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="loading-screen" class="loading-screen hidden">
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="loading-text">Searching for a puzzle…</p>
+      <div id="search-log" class="search-log">
+        <p id="search-evaluated" class="search-metric">Positions evaluated: 0</p>
+        <p id="search-phase" class="search-phase"></p>
+        <div class="table-wrap">
+          <table id="rejection-table">
+            <thead>
+              <tr>
+                <th>Rejection reason</th>
+                <th>Count</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="search-pgn" class="search-metric">PGN games scanned: 0</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+  <script src="/static/puzzle.js"></script>
+</body>
+</html>
