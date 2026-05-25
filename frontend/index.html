@@ -20,7 +20,15 @@
 
   <main class="layout">
     <section class="board-panel">
-      <div id="board"></div>
+      <div class="board-with-eval">
+        <div class="eval-wrap" id="eval-wrap">
+          <div class="eval-track" id="eval-track">
+            <div class="eval-fill" id="eval-fill"></div>
+            <span class="eval-score" id="eval-score">…</span>
+          </div>
+        </div>
+        <div id="board"></div>
+      </div>
       <div class="board-actions">
         <button id="reset-btn" type="button">Reset board</button>
         <button id="flip-btn" type="button">Flip board</button>
@@ -70,6 +78,7 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+  <script src="/static/evalBar.js"></script>
   <script src="/static/app.js"></script>
 </body>
 </html>

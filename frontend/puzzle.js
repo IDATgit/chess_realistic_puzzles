@@ -2,6 +2,7 @@
 
 const game = new Chess();
 let board = null;
+let evalBar = null;
 let boardOrientation = "white";
 let playerElo = 1500;
 let currentPuzzle = null;
@@ -100,6 +101,14 @@ function showScreen(name) {
   document.getElementById("loading-screen").classList.toggle("hidden", name !== "loading");
 }
 
+function refreshEval() {
+  if (!evalBar) {
+    return;
+  }
+  evalBar.setOrientation(boardOrientation);
+  evalBar.scheduleEval(game.fen());
+}
+
 function ensureBoard() {
   if (board) return;
 
@@ -112,7 +121,13 @@ function ensureBoard() {
     onDrop,
     onSnapEnd,
   });
-  $(window).resize(board.resize);
+  evalBar = mountEvalBar(document.getElementById("board"));
+  $(window).resize(() => {
+    board.resize();
+    if (evalBar) {
+      evalBar.syncHeight(document.getElementById("board"));
+    }
+  });
 }
 
 function resizeBoard() {
@@ -120,6 +135,10 @@ function resizeBoard() {
   requestAnimationFrame(() => {
     board.resize();
     board.position(game.fen());
+    if (evalBar) {
+      evalBar.syncHeight(document.getElementById("board"));
+    }
+    refreshEval();
   });
 }
 
@@ -389,6 +408,7 @@ function renderPuzzle(data) {
     `Improvement (+${data.elo_diff}): +${pct(data.improvement)} win+draw (required ≥ ${pct(data.improvement_threshold)})`;
 
   resizeBoard();
+  refreshEval();
 }
 
 function onDragStart(source, piece) {
@@ -429,6 +449,7 @@ function onDrop(source, target) {
     feedback.textContent = `You played ${playedSan}. (No move data in +300 band.)`;
     feedback.className = "feedback";
     board.position(game.fen());
+    refreshEval();
     finishAttempt();
     return;
   }
@@ -445,6 +466,7 @@ function onDrop(source, target) {
     feedback.textContent = message;
     feedback.className = "feedback success";
     board.position(game.fen());
+    refreshEval();
     finishAttempt();
     return;
   }
@@ -458,6 +480,7 @@ function onDrop(source, target) {
     : `Wrong. The best move is ${solution} (you played ${playedSan}).`;
   feedback.className = "feedback miss";
   board.position(game.fen());
+  refreshEval();
   finishAttempt();
 }
 
@@ -520,6 +543,7 @@ function flipBoard() {
   ensureBoard();
   boardOrientation = boardOrientation === "white" ? "black" : "white";
   board.orientation(boardOrientation);
+  refreshEval();
 }
 
 async function init() {

@@ -60,6 +60,80 @@ h1 {
   gap: 0.75rem;
 }
 
+.board-with-eval {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 504px;
+}
+
+.board-with-eval #board {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  max-width: 480px;
+}
+
+.eval-wrap {
+  flex-shrink: 0;
+  width: 24px;
+}
+
+.eval-wrap.eval-flipped .eval-track {
+  transform: scaleY(-1);
+}
+
+.eval-wrap.eval-flipped .eval-score {
+  transform: translate(-50%, -50%) scaleY(-1);
+}
+
+.eval-track {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  background: #312e2b;
+  border: 2px solid #262421;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  overflow: hidden;
+}
+
+.eval-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: #eeeed2;
+  transition: height 0.25s ease-out;
+}
+
+.eval-score {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #262421;
+  z-index: 1;
+  pointer-events: none;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: -0.02em;
+}
+
+.eval-wrap.eval-unavailable .eval-fill {
+  background: #5a5753;
+}
+
+.eval-wrap.eval-unavailable .eval-score {
+  color: #9a9aa8;
+  writing-mode: horizontal-tb;
+  font-size: 0.55rem;
+}
+
 #board {
   width: 100%;
   max-width: 480px;
@@ -337,7 +411,11 @@ tbody tr:hover {
   max-width: 480px;
 }
 
-.puzzle-layout #board {
+.puzzle-layout .board-with-eval {
+  max-width: 504px;
+}
+
+.puzzle-layout .board-with-eval #board {
   width: 480px;
   max-width: 100%;
 }

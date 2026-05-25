@@ -2,6 +2,7 @@
 
 const game = new Chess();
 let board = null;
+let evalBar = null;
 let boardOrientation = "white";
 let fetchTimer = null;
 
@@ -82,8 +83,17 @@ function renderStats(data) {
   }
 }
 
+function refreshEval() {
+  if (!evalBar) {
+    return;
+  }
+  evalBar.setOrientation(boardOrientation);
+  evalBar.scheduleEval(fenForApi());
+}
+
 function scheduleStatsRefresh() {
   document.getElementById("fen-display").value = fenForApi();
+  refreshEval();
   clearTimeout(fetchTimer);
   fetchTimer = setTimeout(async () => {
     try {
@@ -147,6 +157,7 @@ function resetBoard() {
 function flipBoard() {
   boardOrientation = boardOrientation === "white" ? "black" : "white";
   board.orientation(boardOrientation);
+  refreshEval();
 }
 
 async function init() {
@@ -161,7 +172,13 @@ async function init() {
   };
 
   board = Chessboard("board", cfg);
-  $(window).resize(board.resize);
+  evalBar = mountEvalBar(document.getElementById("board"));
+  $(window).resize(() => {
+    board.resize();
+    if (evalBar) {
+      evalBar.syncHeight(document.getElementById("board"));
+    }
+  });
 
   document.getElementById("reset-btn").addEventListener("click", resetBoard);
   document.getElementById("flip-btn").addEventListener("click", flipBoard);
