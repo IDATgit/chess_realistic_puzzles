@@ -1,0 +1,2 @@
+# Lichess raw dumps (~30 GB per month)
+data/*.pgn.zst
