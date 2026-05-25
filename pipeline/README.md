@@ -14,25 +14,24 @@ pip install -r requirements.txt
 python -m pipeline.build_position_db --max-games 1000
 ```
 
-## Build (full month)
+## Build (full month, incremental — readable while building)
 
 ```bash
-python -m pipeline.build_position_db
+python -m pipeline.build_position_db --workers 1 --flush-every 5000
 ```
 
-Output: `data/processed/position_stats.db`
+Output: `data/processed/position_stats.db` (WAL mode; commits every 5k games)
 
-## Query example
+### Read while building
 
 ```sql
--- Stats for a position at ~1000 Elo (bin 1000) vs ~1300 Elo (bin 1300)
+-- Progress
+SELECT key, value FROM meta ORDER BY key;
+
+-- Example: bin stats for a position hash at 1000 vs 1300 Elo
 SELECT elo_bin, games, wins, losses, draws
 FROM bin_stats
-WHERE position_key = ?
-  AND elo_bin IN (1000, 1300);
-
-SELECT move_uci, games
-FROM move_stats
-WHERE position_key = ? AND elo_bin = 1000
-ORDER BY games DESC;
+WHERE position_key = '8714366160a63779' AND elo_bin IN (1000, 1300);
 ```
+
+Use a read-only SQLite connection (or any reader). WAL allows concurrent reads during writes.

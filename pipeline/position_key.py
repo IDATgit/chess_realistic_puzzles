@@ -3,20 +3,31 @@
 from __future__ import annotations
 
 import chess
+import chess.polyglot
+
+
+def position_key(board: chess.Board) -> int:
+    """Fast transposition key (Zobrist hash of board + side + castling + en passant)."""
+    return chess.polyglot.zobrist_hash(board)
+
+
+def position_key_hex(board: chess.Board) -> str:
+    return f"{position_key(board):016x}"
+
+
+def storage_fen(board: chess.Board) -> str:
+    """Human-readable FEN (4 fields) stored once per position for display/debug."""
+    ep = chess.square_name(board.ep_square) if board.ep_square else "-"
+    turn = "w" if board.turn else "b"
+    return f"{board.board_fen()} {turn} {board.castling_xfen()} {ep}"
 
 
 def normalized_fen(board: chess.Board) -> str:
-    """
-    Position key: FEN fields 1–4 only (pieces, side, castling, en passant).
-
-    Omits halfmove clock and fullmove number so transpositions share one key.
-    """
-    parts = board.fen().split(" ")
-    return " ".join(parts[:4])
+    """Alias kept for compatibility with docs/tests."""
+    return storage_fen(board)
 
 
 def elo_bin(elo: int) -> int:
-    """100-point bins: 0→[0,99], 100→[100,199], 1523→1500, etc."""
     if elo < 0:
         raise ValueError(f"invalid elo: {elo}")
     return (elo // 100) * 100
@@ -38,11 +49,6 @@ def parse_elo(header_value: str | None) -> int | None:
 
 
 def outcome_for_player_to_move(board: chess.Board, result: str) -> str | None:
-    """
-    Return 'win', 'loss', or 'draw' for the side to move, from the game result tag.
-
-    Returns None for unfinished/unknown results (skip stat).
-    """
     if result == "1/2-1/2":
         return "draw"
     if result == "1-0":
@@ -50,3 +56,7 @@ def outcome_for_player_to_move(board: chess.Board, result: str) -> str | None:
     if result == "0-1":
         return "loss" if board.turn == chess.WHITE else "win"
     return None
+
+
+def outcome_code(outcome: str) -> int:
+    return {"loss": 0, "draw": 1, "win": 2}[outcome]

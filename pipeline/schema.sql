@@ -36,5 +36,7 @@ CREATE TABLE IF NOT EXISTS move_stats (
     FOREIGN KEY (position_key) REFERENCES positions(position_key)
 );
 
+-- Indexes support queries while the DB is still being built (WAL mode).
 CREATE INDEX IF NOT EXISTS idx_bin_stats_elo ON bin_stats(elo_bin);
 CREATE INDEX IF NOT EXISTS idx_move_stats_elo ON move_stats(elo_bin);
+CREATE INDEX IF NOT EXISTS idx_bin_stats_position ON bin_stats(position_key);
