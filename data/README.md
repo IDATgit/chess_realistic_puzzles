@@ -10,7 +10,9 @@ Raw Lichess standard rated game dumps for local processing.
 | **Source** | https://database.lichess.org/standard/ |
 | **Month** | April 2026 (latest complete month at download) |
 | **Format** | PGN compressed with Zstandard (`.zst`) |
+| **Size (on disk)** | ~27.31 GB compressed |
 | **License** | CC0 |
+| **Status** | Download complete |
 
 Decompress or stream-parse with `zstd` / `zstdcat` (do not commit this file to git).
 
